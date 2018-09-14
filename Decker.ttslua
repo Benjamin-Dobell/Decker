@@ -99,6 +99,7 @@ do
         obj.Locked = options.locked or false
         obj.Tooltip = options.tooltip or true
         obj.GUID = options.guid or 'deadbf'
+        obj.Hands = options.hands or false
     end
     -- default spawnObjectJSON params since it doesn't like blank fields
     local function defaultParams(params, json)

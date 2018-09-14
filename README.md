@@ -194,4 +194,5 @@ common object properties like name, description, lock status etc so you don't ha
 * ``tooltip``: bool, if the tooltip on object is shown, default true
 * ``scriptState``: string, saved state of the script, default empty
 * ``guid``: string, GUID this object will *try* to have, default 'deadbf'
+* ``hands``: bool, if the object can be added to player's hands, default false
 Keep in ming ``guid`` field will be ignored (TTS does this, not me) if it's invalid or if an object of this GUID already exists.
