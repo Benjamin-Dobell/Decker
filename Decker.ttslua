@@ -1,6 +1,6 @@
 do
     Decker = {}
-    
+
     -- provide unique ID starting from 20 for present decks
     local nextID
     do
@@ -10,7 +10,7 @@ do
             return tostring(_nextID)
         end
     end
-    
+
     -- Asset signature (equality comparison)
     local function assetSignature(assetData)
         return table.concat({
@@ -33,14 +33,14 @@ do
         end
         return key
     end
-    
+
     local assetMeta = {
         deck = function(self, cardNum, options)
             return Decker.AssetDeck(self, cardNum, options)
         end
     }
     assetMeta = {__index = assetMeta}
-    
+
     -- Create a new CustomDeck asset
     function Decker.Asset(face, back, options)
         local asset = {}
@@ -57,14 +57,14 @@ do
         asset.id = assetID(asset.data)
         return setmetatable(asset, assetMeta)
     end
-    
+
     function Decker.AssetFromData(assetData)
-        return setmetatable({data = assetData, id = assetID(assetData)}, assetMeta)     
+        return setmetatable({data = assetData, id = assetID(assetData)}, assetMeta)
     end
 
     -- Create a base for JSON objects
-    function Decker.BaseObject()
-        return {
+    function Decker.BaseObject(options)
+        return table.join({
             Name = 'Base',
             Transform = {
                 posX = 0, posY = 5, posZ = 0,
@@ -86,20 +86,9 @@ do
             LuaScript = '',
             LuaScriptState = '',
             GUID = 'deadbf'
-        }
+        }, options)
     end
-    -- Apply some basic parameters on base JSON object
-    function Decker.SetCommonOptions(obj, options)
-        options = options or {}
-        obj.Nickname = options.name or ''
-        obj.Description = options.desc or ''
-        obj.LuaScript = options.script or ''
-        obj.XmlUI = options.xmlui or ''
-        obj.LuaScriptState = options.scriptState or ''
-        obj.Locked = options.locked or false
-        obj.Tooltip = options.tooltip or true
-        obj.GUID = options.guid or 'deadbf'
-    end
+
     -- default spawnObjectJSON params since it doesn't like blank fields
     local function defaultParams(params, json)
         params = params or {}
@@ -147,10 +136,6 @@ do
         copy = function(self)
             return setmetatable(deepcopy(self), getmetatable(self))
         end,
-        setCommon = function(self, options)
-            Decker.SetCommonOptions(self.data, options)
-            return self
-        end,
     }
     -- apply common part on a specific metatable
     local function customMeta(mt)
@@ -190,13 +175,7 @@ do
     -- Create a DeckerCard from an asset
     function Decker.Card(asset, row, col, options)
         options = options or {}
-        local card = Decker.BaseObject()
-        card.Name = 'Card'
-        -- optional custom fields
-        Decker.SetCommonOptions(card, options)
-        if options.sideways ~= nil then
-            card.SidewaysCard = options.sideways
-        end
+        local card = Decker.BaseObject(table.join({Name='Card'}, options))
         -- CardID string is parent deck ID concat with its 0-based index (always two digits)
         local num = (row-1)*asset.data.NumWidth + col - 1
         num = string.format('%02d', num)
@@ -349,9 +328,8 @@ do
     deckMeta = customMeta(deckMeta)
     -- Create DeckerDeck object from DeckerCards
     function Decker.Deck(cards, options)
-        local deck = Decker.BaseObject()
-        deck.Name = 'Deck'
-        Decker.SetCommonOptions(deck, options)
+        options = options or {}
+        local deck = Decker.BaseObject(table.join({Name='Deck'}, options))
         deck.DeckIDs = {}
         deck.CustomDeck = {}
         deck.ContainedObjects = {}

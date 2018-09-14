@@ -90,25 +90,24 @@ end
     * ``hiddenBack``: bool, should backs be hidden in hands, default false
   * Returns created ``asset``
 
-* ``Decker.Card(asset cardAsset, int rowNum, int colNum, table commonParams)``
+* ``Decker.Card(asset cardAsset, int rowNum, int colNum, table new)``
   * Creates (but not spawns yet!) a new ``DeckerCard`` object that defines a single card
   * Arg ``cardAsset``: asset created using ``Decker.Asset`` to be used fo this card
   * Args ``rowNum``, ``colNum``: integers which row/column from the asset this card is
-  * Arg ``commonParams`` (optional) table of object properties, see [Common Params Table](#common-params-table)
-    * Method-specific field ``sideways``: bool, if the card be oriented sideways, default false
+  * Arg ``params`` (optional) table of TTS Card JSON properties
   * Returns created ``DeckerCard`` object
 
-* ``Decker.Deck(table cards, table commonParams)``
+* ``Decker.Deck(table cards, table options)``
   * Creates (but not spawns yet!) a new ``DeckerDeck`` object that defines a deck
   * Arg ``cards``: table of ``DeckerCard`` this deck consists, also see [Indexing and order](#indexing-and-order)
-  * Arg ``commonParams`` (optional) table of object properties, see [Common Params Table](#common-params-table)
+  * Arg ``params`` (optional) table of TTS Deck JSON properties
   * Returns created ``DeckerDeck`` object
 
-* ``Decker.AssetDeck(asset deckAsset, int cardsNum, table commonParams)``
+* ``Decker.AssetDeck(asset deckAsset, int cardsNum, table options)``
   * Creates (but not spawns yet!) a new ``DeckerDeck`` object that defines a deck from single asset (skipping Decker.Card)
   * Arg ``deckAsset``: an asset used for cards in this deck
   * Arg ``cardsNum``: number of cards in this deck (goes sequentially over cards in asset, row by row)
-  * Arg ``commonParams`` (optional) table of object properties, see [Common Params Table](#common-params-table) section
+  * Arg ``params`` (optional) table of TTS Deck JSON properties
   * Returns created ``DeckerDeck`` object
 
 #### Object methods
@@ -118,11 +117,6 @@ end
   * Arg ``spawnParams``: table of ``parameters`` for [spawnObjectJSON](https://api.tabletopsimulator.com/base/#spawnobjectjson)
   * Returns a TTS [object](https://api.tabletopsimulator.com/object/) of the spawned card
   * Keep in mind objects may not be immediately ready, see [object.spawning](https://api.tabletopsimulator.com/object/#member-variables)
-
-* ``DeckerCard:setCommon(table commonParams) and DeckerDeck:setCommon(table commonParams)``
-  * Sets common params for a deck/card (like name, description, script, etc) to be set upon spawning
-  * Arg ``commonParams``: table of object properties, see [Common Params Table](#common-params-table) section
-  * Returns ``self`` for chaining methods
 
 * ``DeckerCard:setAsset(asset newAsset)``
   * Sets a new asset for a single card
@@ -179,19 +173,3 @@ In ``Decker.Deck({card1, card2, card3})``, ``card1`` will be one with exposed ba
 
 
 Stuff called "index" in Decker functions means a positive number counting from top of the deck (back-visible card is index 1), negative numbers means counting from the other end (front-visible card is index -1).
-
-### Common Params Table
-
-Both ``Decker.Deck`` and ``Decker.Card`` take a ``commonParams`` table as last parameter. It can be used to set some
-common object properties like name, description, lock status etc so you don't have to do it every time you spawn the thing.
-
-``commonParams`` table can consists of keys:
-* ``name``: string, name of the object, default empty
-* ``desc``: string, description of the object, default empty
-* ``locked``: bool, if the object is locked when spawned, default false
-* ``script``: string, lua script on the object, default empty
-* ``xmlui``: string, XML UI code of the object, default empty
-* ``tooltip``: bool, if the tooltip on object is shown, default true
-* ``scriptState``: string, saved state of the script, default empty
-* ``guid``: string, GUID this object will *try* to have, default 'deadbf'
-Keep in ming ``guid`` field will be ignored (TTS does this, not me) if it's invalid or if an object of this GUID already exists.
